@@ -1,0 +1,16 @@
+{
+  "name": "megabackend",
+  "version": "1.0.0",
+  "description": "Backend project on pure Javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "backend",
+    "javascript",
+    "project"
+  ],
+  "author": "Behroze Aslam",
+  "license": "ISC"
+}
