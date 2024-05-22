@@ -1,4 +1,4 @@
-import { app } from "../app"
+import { app } from "../app.js"
 
 // const ayncHandler = (fn) = async (req, res, next)=>{
 //     try {
@@ -15,7 +15,7 @@ import { app } from "../app"
 // }
 
 const ayncHandler = (requestHandler) =>{
-    (req, res, next)=>{
+   return (req, res, next)=>{
         Promise.resolve(
             requestHandler(req, res, next)
         ).reject((error)=>{
@@ -23,3 +23,4 @@ const ayncHandler = (requestHandler) =>{
         })
     }
 }
+export {ayncHandler}

@@ -18,4 +18,10 @@ app.use(express.static("public"))
 // app.get('/',(req,res)=>{
 //     res.send('<h1>Hellow World</h1>')
 // })
+
+//import routes
+import { userRouter } from "./routes/user.routes.js";
+//setpath
+
+app.use('/api/v1/users', userRouter)
 export {app} ;
