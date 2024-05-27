@@ -24,11 +24,11 @@ const userSchema = new Schema({
         index: true
     },
     avatar:{
-        type: true,
+        type: String,
         require: true
     },
     coverImage:{
-        type: true,
+        type: String,
         require: true
     },
     watchHistory:{
@@ -40,11 +40,11 @@ const userSchema = new Schema({
         require : [true, "Password is required"]
     },
     refreshToken:{
-        type: true
+        type: String
     }
 },{timestamps: true})
 userSchema.pre("save", async function(next){
-    if(!this.ismodified('password')) return next()
+    if(!this.isModified('password')) return next()
 
     this.pasword = bcrypt.hash(this.pasword, 10)
     next()
