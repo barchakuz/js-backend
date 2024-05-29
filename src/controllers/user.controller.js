@@ -5,6 +5,23 @@ import {uploadOnCloudinary} from "../utils/cloudnary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
 
+const generateRefreshTokemAndAccessToken = async(userid)=>{
+    try {
+        const user = await User.findById(userid)
+        const refreshToken = user.generateRefreshTokem()
+        const accessToken = user.generateAccessTokem()
+
+        user.refreshToken = refreshToken
+        await user.save({validateBeforeSave : false})
+
+        return {refreshToken, accessToken}
+
+        
+    } catch (error) {
+        throw new ApiError(500, "Failed to Generate Token")
+    }
+
+}
 
 const registerUser = ayncHandler( async (req, res)=>{
    const {fullname, email, username, passowrd} = req.body;
@@ -66,4 +83,56 @@ return res.status(201).json(
 )
 
 })
-export {registerUser}
+
+const userLogin = ayncHandler(async (req, res)=>{
+    const {passowrd, email, username} = req.body;
+    if(!username || !email){
+        throw new ApiError(300, "Email and email required")
+    }
+    const user = await User.findById({
+        $or : [{username},{email}]
+    })
+    if(!user){
+        throw new ApiError(401, "User Not Found")
+    }
+    const isPasswordValid = await user.isPasswordCorrect(passowrd);
+    if(!isPasswordValid){
+        throw new ApiError(401, "Incorrect Password")
+    }
+
+    const {refreshToken, accessToken} = generateRefreshTokemAndAccessToken(user._id)
+
+    const loginInUser = await User.findById(user._id).select("-password -refreshToken")
+
+
+    const option = {
+        httpOnly : true, secure : true
+    }
+        return res.status(200)
+        .cookie("accessToken", accessToken, option)
+        .cookie("refreshToken", refreshToken, options)
+        .json(ApiResponse(
+            200, {user: loginInUser, accessToken, refreshToken}, "Login Success"
+            ))
+    
+
+
+})
+const userLogOut = ayncHandler(async(req, res)=>{
+    await User.findOneAndUpdate(
+        req.user._id,{
+            $set : {
+                refreshToken : undefined
+            }
+
+            
+        }
+    )
+    const option ={
+        httpOnly : true, secure : true
+    }
+    return res.clearcookies("accessToken", option).clearcookies("refreshToken", option).json(200, {},"user Logout Success")
+})
+
+
+export {registerUser, loginInUser,userLogOut}

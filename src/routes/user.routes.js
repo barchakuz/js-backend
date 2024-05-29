@@ -1,6 +1,7 @@
 import { Router } from "express";
-import {registerUser} from "../controllers/user.controller.js"; 
+import {registerUser, userLogin, userLogOut} from "../controllers/user.controller.js"; 
 import { upload } from "../middlewares/cloudinary.middleware.js"
+import { verifyJwt } from "../middlewares/auth.middleware.js";
 
 
 const userRouter = Router();
@@ -18,5 +19,7 @@ userRouter.route("/register").post(
     ]),
     registerUser
     )
+userRouter.route("/login").post(userLogin);
+userRouter.route("/logout").post(verifyJwt, userLogOut);
 
 export {userRouter}
