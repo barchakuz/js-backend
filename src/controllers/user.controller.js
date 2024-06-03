@@ -133,6 +133,45 @@ const userLogOut = ayncHandler(async(req, res)=>{
     }
     return res.clearcookies("accessToken", option).clearcookies("refreshToken", option).json(200, {},"user Logout Success")
 })
+const changeUserPassword = ayncHandler(async(req, res)=>{
+    const {oldPassword, newPassword} = req.body
 
+    const user = await User.findById(req.user?._id);
+    if (!user) {
+        throw new Error(400, "User not found in Database")
+    }
 
-export {registerUser, loginInUser,userLogOut}
+    user.passowrd = newPassword;
+    await user.save({validateBeforeSave : false})
+    return res.status(200).json(new ApiResponse(200,{},"Password Successfully Changed"))
+})
+const getUser = ayncHandler(async(req, res)=>{
+    return res.json(200, req.user?._id,"User Found")
+})
+const changeUserAndEmail = ayncHandler(async(req,res)=>{
+    const {fullname, email} = req.body
+
+    User.findByIdAndUpdate(req.user?._id,{ fullname, email : email},{new : true}).select("-password");
+})
+const changeUserAvatar = ayncHandler(async(req, res)=>{
+    const avatarLocalPath = req.file?.path;
+    if (!avatarLocalPath) {
+        throw new ApiError (400, "Please Upload Avatar")
+    }
+    const user = await User.findByIdAndUpdate(req.user?._id,{avatar : avatar.url}, {new: true}).select("-password")
+    if(!avatar){ throw new ApiError(400, "Avatar Update Failed")}
+
+    return res.status(200).json(new ApiResponse(200,user, "Avatar Change Successfully"))
+})
+const changeUsercoverImage = ayncHandler(async(req, res)=>{
+    const coverImageLocalPath = req.file?.path;
+    if (!coverImageLocalPath) {
+        throw new ApiError (400, "Please Upload coverImage")
+    }
+    const user = await User.findByIdAndUpdate(req.user?._id,{coverImage : coverImage.url}, {new: true}).select("-password")
+    if(!avatar){ throw new ApiError(400, "coverImage Update Failed")}
+
+    return res.status(200).json(new ApiResponse(200,user, "coverImage Change Successfully"))
+})
+
+export {registerUser, loginInUser,userLogOut,changeUserPassword,getUser,changeUserAvatar,changeUsercoverImage}
