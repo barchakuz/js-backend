@@ -1,16 +1,17 @@
-import {v2 as cloudinary} from 'cloudinary';
-import fs from 'fs';
+import {v2 as cloudinary} from "cloudinary"
+import fs from "fs"
+import { ApiError } from "./ApiHandler.js";
 
 
 cloudinary.config({ 
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
-  api_key:  process.env.CLOUDINARY_API_KEY, 
-  api_secret: process.env.CLOUDINARY_API_SECRET 
+    cloud_name: 'dx6vyybhl', 
+    api_key: '591547875439276', 
+    api_secret: 'LzHd7DgDIc9bEt6k5LYWRxNCm6M'
 });
-const uploadOnCloudinary = async function (localFilePath){
 
+const uploadOnCloudinary = async (localFilePath) => {
     try {
-        if(!localFilePath) return null;
+        if (!localFilePath)  throw new ApiError(400, "Local Image Not Found")
 
         
         const response = await cloudinary.uploader.upload(localFilePath, {
@@ -20,13 +21,12 @@ const uploadOnCloudinary = async function (localFilePath){
         fs.unlinkSync(localFilePath)
         return response;
 
-        } catch (error) 
-        {
-            fs.unlinkSync(localFilePath)
-            return null;
-        }
+    } catch (error) {
+        fs.unlinkSync(localFilePath) 
+        throw new ApiError(400, "Network Issue");
     }
+}
 
-    export {uploadOnCloudinary}
 
 
+export {uploadOnCloudinary}

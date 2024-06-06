@@ -52,7 +52,9 @@ const registerUser = ayncHandler( async (req, res)=>{
 
 const avatar = await uploadOnCloudinary(localAvatarPath);
 const coverImage = await uploadOnCloudinary(localcoverImagePath);
-console.log(avatar);
+console.log(avatar); 
+console.log(coverImage); 
+
 
 if(!avatar){
     throw new ApiError(400, "Avator Not found!!")
@@ -174,4 +176,4 @@ const changeUsercoverImage = ayncHandler(async(req, res)=>{
     return res.status(200).json(new ApiResponse(200,user, "coverImage Change Successfully"))
 })
 
-export {registerUser, loginInUser,userLogOut,changeUserPassword,getUser,changeUserAvatar,changeUsercoverImage}
+export {registerUser, userLogin,userLogOut,changeUserPassword,getUser,changeUserAvatar,changeUsercoverImage, changeUserAndEmail}
